@@ -21,7 +21,8 @@ export class ConfigService {
     } else {
       this.envConfig = {
         PORT: process.env.PORT,
-        DATABASE: process.env.DATABASE,
+        DATABASE_URL: process.env.DATABASE_URL,
+        JWT_SECRET: process.env.JWT_SECRET,
       };
     }
   }

@@ -1,10 +1,11 @@
-import { ExcerciseWeek } from '../schemas/excerciseWeek.schema';
+import { IsEmail, MinLength } from 'class-validator';
 
 export class CreateUserDTO {
   name!: string;
+  @IsEmail()
   email!: string;
+  @MinLength(4)
   password!: string;
-  excerciseWeek?: ExcerciseWeek[];
 }
 
 export class UpdateUserDTO {

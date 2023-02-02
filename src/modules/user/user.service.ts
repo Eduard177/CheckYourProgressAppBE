@@ -7,7 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../schemas/user.schema';
 import { CreateUserDTO } from '../dtos/user.dto';
-import { genSaltSync, hashSync } from 'bcrypt';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -23,7 +23,7 @@ export class UserService {
     if (!userEmail) {
       const createdUser = await this.userModel.create(createUserDTO);
       createUserDTO.email = createUserDTO.email.toLocaleLowerCase();
-      createdUser.password = await this.hash(createUserDTO.password);
+      createdUser.password = await hash(createUserDTO.password, 10);
       return await createdUser.save();
     }
     return new BadRequestException('email is already use');
@@ -33,7 +33,7 @@ export class UserService {
     return this.userModel.find();
   }
 
-  async getUserByEmail(email: string): Promise<User | BadRequestException> {
+  async getUserByEmail(email: string): Promise<User> {
     if (!email) {
       throw new BadRequestException('email must be send');
     }
@@ -41,20 +41,15 @@ export class UserService {
     return this.userModel.findOne({ email });
   }
 
-  async getByEmail(
-    email: string,
-  ): Promise<User | BadRequestException | NotFoundException> {
+  async getByEmail(email: string): Promise<User> {
     const userEmail = await this.getUserByEmail(email);
-
     if (!userEmail) {
       throw new NotFoundException('this user dont exist');
     }
     return userEmail;
   }
 
-  async getById(
-    id: string,
-  ): Promise<User | BadRequestException | NotFoundException> {
+  async getById(id: string): Promise<User> {
     if (!id) {
       throw new BadRequestException('id must be send');
     }
@@ -64,11 +59,5 @@ export class UserService {
       throw new NotFoundException('this user dont exist');
     }
     return userId;
-  }
-
-  private async hash(data: string): Promise<string> {
-    const salt = genSaltSync(10);
-    const hash = hashSync(data, salt);
-    return hash;
   }
 }
