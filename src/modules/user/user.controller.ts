@@ -1,6 +1,8 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { JwtStrategy } from '../auth/jwt.strategy';
 import { UserService } from './user.service';
 
+@UseGuards(JwtStrategy)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
