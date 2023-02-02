@@ -6,6 +6,8 @@ import { ExcerciseWeek } from './excerciseWeek.schema';
 export class User extends Document {
   @Prop({ unique: true, length: 11 })
   id: string;
+  @Prop({ length: 12 })
+  name: string;
   @Prop({ required: true, unique: true, index: true })
   email: string;
   @Prop({ required: true })
