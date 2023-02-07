@@ -10,8 +10,10 @@ export class Excecise extends Document {
   @Prop({ required: true })
   sets: number;
   @Prop({ required: true })
-  repetition: object;
+  repetition: number;
   @Prop({ required: true })
-  weight: object;
+  weight: number;
+  @Prop()
+  weightMeasure: string;
 }
 export const ExceciseSchema = SchemaFactory.createForClass(Excecise);

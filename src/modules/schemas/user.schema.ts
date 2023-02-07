@@ -12,6 +12,12 @@ export class User extends Document {
   email: string;
   @Prop({ required: true })
   password: string;
+  @Prop()
+  weight: number;
+  @Prop({ length: 2 })
+  weightMeasure: string;
+  @Prop()
+  photos: [string];
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ExcerciseWeek' }],
   })

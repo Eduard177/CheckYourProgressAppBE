@@ -9,7 +9,7 @@ export class Days extends Document {
   @Prop({ required: true })
   day: string;
   @Prop({ required: true })
-  partBody: string;
+  bodyParts: [];
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Excecise' }],
   })
