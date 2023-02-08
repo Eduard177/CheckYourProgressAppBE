@@ -10,7 +10,7 @@ export class MailManagerController {
   constructor(private readonly mailManagerService: MailManagerService) {}
 
   @Post('send-email')
-  async SendEmail(@Body() forgetPasswordDTO: ForgetPasswordDTO) {
+  async sendEmail(@Body() forgetPasswordDTO: ForgetPasswordDTO) {
     await this.mailManagerService.sendEmail(forgetPasswordDTO);
   }
 }

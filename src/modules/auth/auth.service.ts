@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -11,8 +13,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { compareSync, hashSync } from 'bcrypt';
 import { Model } from 'mongoose';
 import { ForgetPasswordDTO, LoginUserDTO } from '../dtos/auth.dto';
+import { CreateUserDTO } from '../dtos/user.dto';
 import { User } from '../schemas/user.schema';
 import { UserService } from '../user/user.service';
+import { jwtConstants } from './constants';
 import { MailManagerService } from './mail-manager/mail-manager.service';
 
 @Injectable()
@@ -22,12 +26,37 @@ export class AuthService {
     private userModel: Model<User>,
     private userService: UserService,
     private jwtServices: JwtService,
+    @Inject(forwardRef(() => MailManagerService))
     private mailService: MailManagerService,
   ) {}
 
   async validateUser(loginUserDTO: LoginUserDTO): Promise<any> {
     const user = await this.loginTries(loginUserDTO);
     return this.convertToToken(user);
+  }
+
+  async register(createUserDTO: CreateUserDTO): Promise<any> {
+    const user = await this.userService.create(createUserDTO);
+    await this.mailService.confirmationEmail(createUserDTO.email);
+    return user;
+  }
+
+  async confirmEmail(token: string) {
+    try {
+      const user = await this.jwtServices.verifyAsync(token, {
+        secret: jwtConstants.secret,
+      });
+
+      await this.userModel.updateOne(
+        { _id: user.id },
+        {
+          isConfirmedEmail: true,
+        },
+      );
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+    throw new HttpException('Your email was confirmed', HttpStatus.OK);
   }
 
   async loginTries(loginUserDTO: LoginUserDTO): Promise<User> {
@@ -43,13 +72,19 @@ export class AuthService {
         user.save();
       }
       await this.mailService.sendEmailToMaxTries(loginUserDTO.email);
-      throw new BadRequestException('Maximum number of attempts');
+      throw new BadRequestException(
+        'Maximum number of attempts, this user is blocked',
+      );
     }
 
     if (!isPasswordMatching) {
       user.loginTries = user.loginTries + 1;
       user.save();
       throw new NotFoundException('Wrong credential provided');
+    }
+
+    if (!user.isConfirmedEmail) {
+      throw new BadRequestException('Please confirm your email to login');
     }
     user.isBlocked = false;
     user.loginTries = 0;
@@ -78,7 +113,7 @@ export class AuthService {
     const payload = {
       id: user._id,
       name: user.name,
-      excerciseWeek: user.excerciseWeek,
+      email: user.email,
     };
     const data = {
       token: this.jwtServices.sign(payload),

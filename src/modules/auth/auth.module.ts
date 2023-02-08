@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -10,6 +10,8 @@ import { ConfigService } from 'src/config/config.service';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
 import { MailManagerService } from './mail-manager/mail-manager.service';
+import { UserModule } from '../user/user.module';
+import { MailManagerModule } from './mail-manager/mail-manager.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { MailManagerService } from './mail-manager/mail-manager.service';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1h' },
     }),
+    UserModule,
+    forwardRef(() => MailManagerModule),
   ],
   providers: [
     AuthService,
