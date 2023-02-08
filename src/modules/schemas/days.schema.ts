@@ -1,15 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document, ObjectId } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { Excecise } from './excercise.schema';
 
 @Schema()
 export class Days extends Document {
-  @Prop({ required: true, unique: true, length: 11 })
-  id: ObjectId;
   @Prop({ required: true })
   day: string;
   @Prop({ required: true })
-  partBody: string;
+  bodyParts: [];
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Excecise' }],
   })
