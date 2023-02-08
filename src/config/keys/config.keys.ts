@@ -2,4 +2,6 @@ export enum ConfigKeys {
   PORT = 'PORT',
   DATABASE_URL = 'DATABASE_URL',
   JWT_SECRET = 'JWT_SECRET',
+  MAIL_USER = 'MAIL_USER',
+  MAIL_PASSWORD = 'MAIL_PASSWORD',
 }
