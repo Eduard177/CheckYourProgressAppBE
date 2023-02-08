@@ -4,8 +4,6 @@ import { ExcerciseWeek } from './excerciseWeek.schema';
 
 @Schema()
 export class User extends Document {
-  @Prop({ unique: true, length: 11 })
-  id: string;
   @Prop()
   name: string;
   @Prop({ required: true, unique: true, index: true })
@@ -20,6 +18,8 @@ export class User extends Document {
   loginTries: number;
   @Prop({ default: false })
   isBlocked: boolean;
+  @Prop({ default: false })
+  isConfirmedEmail: boolean;
   @Prop()
   photos: [string];
   @Prop({
