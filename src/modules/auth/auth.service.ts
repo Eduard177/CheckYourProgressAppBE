@@ -69,17 +69,17 @@ export class AuthService {
     if (user.loginTries >= 5) {
       if (!user.isBlocked) {
         user.isBlocked = true;
-        user.save();
+        await user.save();
+        await this.mailService.unblockUserEmail(loginUserDTO.email);
+        throw new BadRequestException('This User is blocked');
       }
       await this.mailService.sendEmailToMaxTries(loginUserDTO.email);
-      throw new BadRequestException(
-        'Maximum number of attempts, this user is blocked',
-      );
+      throw new BadRequestException('Maximum number of attempts');
     }
 
     if (!isPasswordMatching) {
       user.loginTries = user.loginTries + 1;
-      user.save();
+      await user.save();
       throw new NotFoundException('Wrong credential provided');
     }
 
@@ -88,7 +88,7 @@ export class AuthService {
     }
     user.isBlocked = false;
     user.loginTries = 0;
-    user.save();
+    await user.save();
 
     return user;
   }
@@ -100,7 +100,7 @@ export class AuthService {
     const user = await this.jwtServices.verifyAsync(token, {
       secret: jwtConstants.secret,
     });
-    this.userModel.updateOne(
+    await this.userModel.updateOne(
       { email: user.email },
       {
         password: await hash(newPassword, 10),
@@ -116,7 +116,29 @@ export class AuthService {
     throw new HttpException('Your password is changed', HttpStatus.OK);
   }
 
-  convertToToken(user: User) {
+  async unblockUser(token: string) {
+    const user = await this.jwtServices.verifyAsync(token, {
+      secret: jwtConstants.secret,
+    });
+
+    await this.userModel.updateOne(
+      { email: user.email },
+      {
+        isBlocked: false,
+        loginTries: 0,
+      },
+      (err: any) => {
+        if (err) {
+          throw new InternalServerErrorException(
+            `Wrong credential provided, error: ${err.message}`,
+          );
+        }
+      },
+    );
+    throw new HttpException('Your user is unblock', HttpStatus.OK);
+  }
+
+  private convertToToken(user: User) {
     const payload = {
       id: user._id,
       name: user.name,

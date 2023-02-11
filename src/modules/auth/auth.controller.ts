@@ -32,4 +32,9 @@ export class AuthController {
   ) {
     return this.authServices.forgetPassword(newPassword, token);
   }
+
+  @Get('unblock/:token')
+  unblockUser(@Param('token') token: string) {
+    return this.authServices.unblockUser(token);
+  }
 }

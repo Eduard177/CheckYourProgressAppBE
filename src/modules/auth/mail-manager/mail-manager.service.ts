@@ -72,7 +72,7 @@ export class MailManagerService {
         ConfigKeys.MAIL_USER,
       )}>`,
       to: `${email}`,
-      subject: 'Confirm Email',
+      subject: 'You user is block',
       html: this.contentHtmlMaxTries,
     });
 
@@ -80,8 +80,7 @@ export class MailManagerService {
   }
 
   async confirmationEmail(email: string) {
-    const user = await this.userModel.findOne({ email });
-    const token = this.convertToToken(user);
+    const token = await this.getOneUserAndRetunToken(email);
     const url = `http://localhost:3000/auth/confirm/${token.token}`;
     const info = await this.transporter.sendMail({
       from: `'CheckYourProgress enterprise' <${this.configService.get(
@@ -94,7 +93,27 @@ export class MailManagerService {
     console.log('Message sent', info.messageId);
   }
 
-  convertToToken(user: User) {
+  async unblockUserEmail(email: string) {
+    const token = await this.getOneUserAndRetunToken(email);
+    const url = `http://localhost:3000/auth/unblock/${token.token}`;
+    const info = await this.transporter.sendMail({
+      from: `'CheckYourProgress enterprise' <${this.configService.get(
+        ConfigKeys.MAIL_USER,
+      )}>`,
+      to: `${email}`,
+      subject: 'UnBlock User',
+      html: `<h1>You are blocked, if you want unblock please click here: <a href="${url}">${url}</a></h1>`,
+    });
+    console.log('Message sent', info.messageId);
+  }
+
+  async getOneUserAndRetunToken(email: string) {
+    const user = await this.userModel.findOne({ email });
+    const token = this.convertToToken(user);
+    return token;
+  }
+
+  private convertToToken(user: User) {
     const payload = {
       id: user._id,
       name: user.name,
