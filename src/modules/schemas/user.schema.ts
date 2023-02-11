@@ -12,7 +12,7 @@ export class User extends Document {
   password: string;
   @Prop()
   weight: number;
-  @Prop({ length: 2 })
+  @Prop({ length: 2, default: 'lb' })
   weightMeasure: string;
   @Prop({ default: 0 })
   loginTries: number;
