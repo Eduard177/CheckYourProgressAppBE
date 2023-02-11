@@ -10,9 +10,9 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import { compareSync, hashSync } from 'bcrypt';
+import { compareSync, hash } from 'bcrypt';
 import { Model } from 'mongoose';
-import { ForgetPasswordDTO, LoginUserDTO } from '../dtos/auth.dto';
+import { LoginUserDTO } from '../dtos/auth.dto';
 import { CreateUserDTO } from '../dtos/user.dto';
 import { User } from '../schemas/user.schema';
 import { UserService } from '../user/user.service';
@@ -93,16 +93,23 @@ export class AuthService {
     return user;
   }
 
-  async forgetPassword(forgetPasswordDTO: ForgetPasswordDTO) {
-    const user = await this.userService.getByEmail(forgetPasswordDTO.email);
+  async forgetPassword(newPassword: string, token: string) {
+    if (!token) {
+      throw new BadRequestException('token must be send');
+    }
+    const user = await this.jwtServices.verifyAsync(token, {
+      secret: jwtConstants.secret,
+    });
     this.userModel.updateOne(
       { email: user.email },
       {
-        password: hashSync(forgetPasswordDTO.newPassword, 10),
+        password: await hash(newPassword, 10),
       },
       (err: any) => {
         if (err) {
-          throw new InternalServerErrorException('Wrong credential provided');
+          throw new InternalServerErrorException(
+            `Wrong credential provided, error: ${err.message}`,
+          );
         }
       },
     );

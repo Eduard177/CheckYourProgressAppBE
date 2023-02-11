@@ -47,13 +47,20 @@ export class MailManagerService {
   });
 
   async sendEmailToForget(forgetPasswordDTO: ForgetPasswordDTO) {
+    const user = await this.userModel.findOne({
+      email: forgetPasswordDTO.email,
+    });
+    const token = this.convertToToken(user);
+    const url = `
+      <h1><b>Change your password</b></h1>
+      <a href="http://localhost:3000/auth/password/new/${token.token}?newPassword=${forgetPasswordDTO.newPassword}"><b>New Password</b></a>`;
     const info = await this.transporter.sendMail({
       from: `'CheckYourProgress enterprise' <${this.configService.get(
         ConfigKeys.MAIL_USER,
       )}>`,
       to: `${forgetPasswordDTO.email}`,
       subject: 'forget password',
-      html: this.contentHtmlForget,
+      html: url,
     });
 
     console.log('Message sent', info.messageId);
@@ -98,10 +105,6 @@ export class MailManagerService {
     };
     return data;
   }
-  contentHtmlForget = `
-      <h1><b>Change your password</b></h1>
-      <a href="http://localhost:3000/api/users/password/new"><b>New Password</b></a>
-      `;
 
   contentHtmlMaxTries = `
       <h1><b>someone is trying to enter your account, Is you?</b></h1>
