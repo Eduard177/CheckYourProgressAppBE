@@ -1,9 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
-import { ExcerciseWeek } from './excerciseWeek.schema';
+import { Transform } from 'class-transformer';
+import mongoose, { Document, ObjectId } from 'mongoose';
+import { Days } from './days.schema';
 
 @Schema()
 export class User extends Document {
+  @Transform(({ value }) => value.toString())
+  _id: ObjectId;
   @Prop()
   name: string;
   @Prop({ required: true, unique: true, index: true })
@@ -20,11 +23,9 @@ export class User extends Document {
   isBlocked: boolean;
   @Prop({ default: false })
   isConfirmedEmail: boolean;
-  @Prop()
-  photos: [string];
   @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ExcerciseWeek' }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Days' }],
   })
-  excerciseWeek: ExcerciseWeek[];
+  days: Days[];
 }
 export const UserSchema = SchemaFactory.createForClass(User);

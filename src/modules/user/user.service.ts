@@ -24,7 +24,7 @@ export class UserService {
       const createdUser = await this.userModel.create(createUserDTO);
       createUserDTO.email = createUserDTO.email.toLocaleLowerCase();
       createdUser.password = await hash(createUserDTO.password, 10);
-      return await createdUser.save();
+      return createdUser.save();
     }
     return new BadRequestException('email is already use');
   }

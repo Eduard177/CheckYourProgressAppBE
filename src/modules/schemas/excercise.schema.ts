@@ -1,8 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Transform, Type } from 'class-transformer';
+import mongoose, { Document, ObjectId } from 'mongoose';
+import { Days } from './days.schema';
 
 @Schema()
-export class Excecise extends Document {
+export class Exercises extends Document {
+  @Transform(({ value }) => value.toString())
+  _id: ObjectId;
   @Prop({ required: true })
   exercise: string;
   @Prop({ required: true })
@@ -11,7 +15,10 @@ export class Excecise extends Document {
   repetition: number;
   @Prop({ required: true })
   weight: number;
-  @Prop()
+  @Prop({ length: 2, default: 'lb' })
   weightMeasure: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Days.name })
+  @Type(() => Days)
+  day: Days;
 }
-export const ExceciseSchema = SchemaFactory.createForClass(Excecise);
+export const ExercisesSchema = SchemaFactory.createForClass(Exercises);
