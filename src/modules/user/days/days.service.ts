@@ -14,17 +14,18 @@ export class DaysService {
   ) {}
 
   async create(createDay: CreateDay, email: string): Promise<Days> {
-    const userEmail = await this.userService.getByEmail(email);
-    if (userEmail.isConfirmedEmail && !userEmail.isBlocked) {
+    const user = await this.userService.getByEmail(email);
+    if (user.isConfirmedEmail && !user.isBlocked) {
       const dayModel = new this.daysModel({
         ...createDay,
-        user: userEmail,
+        user: user,
       });
       const createDayModel = await this.daysModel.create(dayModel);
+      await this.userService.addDayToUser(user.id, createDayModel.id);
       return createDayModel.save();
     }
     throw new BadRequestException(
-      userEmail.isBlocked
+      user.isBlocked
         ? 'this User is blocked'
         : 'this user needs to activate his account',
     );
@@ -35,7 +36,32 @@ export class DaysService {
     return this.daysModel.find({ user });
   }
 
-  async deleteDay(_id: string) {
+  async deleteDay(_id: string, userId: string) {
+    await this.userService.removeDayToUser(userId, _id);
     return this.daysModel.deleteOne({ _id });
+  }
+
+  async getDayById(_id: string) {
+    return this.daysModel.findById(_id);
+  }
+
+  async addExcercieToDay(dayId: string, exercisesId: string) {
+    return this.daysModel.findByIdAndUpdate(
+      dayId,
+      {
+        $addToSet: { exercises: exercisesId },
+      },
+      { new: true },
+    );
+  }
+
+  async removeExcerciseToDay(dayId: string, excerciseId: string) {
+    return this.daysModel.findByIdAndUpdate(
+      dayId,
+      {
+        $pull: { exercises: excerciseId },
+      },
+      { new: true },
+    );
   }
 }

@@ -6,7 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../schemas/user.schema';
-import { CreateUserDTO } from '../dtos/user.dto';
+import { CreateUserDTO, UpdateUserDTO } from '../dtos/user.dto';
 import { hash } from 'bcrypt';
 
 @Injectable()
@@ -59,5 +59,26 @@ export class UserService {
       throw new NotFoundException('this user dont exist');
     }
     return userId;
+  }
+
+  async updateUser(id: string, updateUserDTO: UpdateUserDTO) {
+    const user = this.getById(id);
+    return this.userModel.updateOne(user, { ...updateUserDTO });
+  }
+
+  async addDayToUser(userId: string, dayId: string) {
+    return this.userModel.findByIdAndUpdate(
+      userId,
+      { $addToSet: { days: dayId } },
+      { new: true },
+    );
+  }
+
+  async removeDayToUser(userId: string, dayId: string) {
+    return this.userModel.findByIdAndUpdate(
+      userId,
+      { $pull: { days: dayId } },
+      { new: true },
+    );
   }
 }

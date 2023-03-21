@@ -12,5 +12,6 @@ import { DaysController } from './days.controller';
   ],
   providers: [DaysService],
   controllers: [DaysController],
+  exports: [DaysService],
 })
 export class DaysModule {}

@@ -31,7 +31,12 @@ export class DaysController {
   }
 
   @Delete('delete')
-  deleteDay(@Body() _id: string) {
-    return this.daysServices.deleteDay(_id);
+  deleteDay(@Body('dayId') dayId: string, @Body('userId') userId: string) {
+    return this.daysServices.deleteDay(dayId, userId);
+  }
+
+  @Get('id/:id')
+  getDayById(@Param('id') id: string) {
+    return this.daysServices.getDayById(id);
   }
 }
