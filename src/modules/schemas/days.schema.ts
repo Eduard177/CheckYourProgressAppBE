@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Transform, Type } from 'class-transformer';
 import mongoose, { Document, ObjectId } from 'mongoose';
-import { Exercises } from './excercise.schema';
+import { Excercise } from './excercise.schema';
 import { User } from './user.schema';
 
 @Schema()
@@ -15,7 +15,7 @@ export class Days extends Document {
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Excecise' }],
   })
-  exercises: Exercises[];
+  exercises: [Excercise];
   @Prop({ default: Date.now() })
   createdAt: Date;
   @Prop({ default: Date.now() })

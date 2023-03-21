@@ -24,8 +24,8 @@ export class User extends Document {
   @Prop({ default: false })
   isConfirmedEmail: boolean;
   @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Days' }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: Days.name }],
   })
-  days: Days[];
+  days: [Days];
 }
 export const UserSchema = SchemaFactory.createForClass(User);
