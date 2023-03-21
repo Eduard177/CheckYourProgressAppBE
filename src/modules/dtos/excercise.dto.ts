@@ -1,18 +1,50 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsString,
+  Length,
+} from 'class-validator';
 
-export class CreateExercises {
+export class CreateExcercises {
   @ApiProperty()
   exercise: string;
   @ApiProperty()
   @IsNumber()
   sets: number;
   @ApiProperty()
-  @IsNumber()
-  repetition: number;
+  @IsObject()
+  repetition: any;
+  @ApiProperty()
+  @IsObject()
+  weight: any;
+  @ApiProperty()
+  @Length(2)
+  @IsString()
+  weightMeasure: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  dayId: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+}
+
+export class UpdateExcercises {
+  @ApiProperty()
+  exercise: string;
   @ApiProperty()
   @IsNumber()
-  weight: number;
+  sets: number;
+  @ApiProperty()
+  @IsObject()
+  repetition: any;
+  @ApiProperty()
+  @IsObject()
+  weight: any;
   @ApiProperty()
   @Length(2)
   @IsString()
