@@ -20,7 +20,7 @@ export class ExcerciseService {
 
   async create(createExcercise: CreateExcercises): Promise<Excercise> {
     const getDay = await this.daysService.getDayById(createExcercise.dayId);
-    const user = await this.userService.getById(getDay.get('user')._id);
+    const user = await this.userService.getById(getDay.get('user'));
     if (user.email !== createExcercise.email) {
       throw new BadRequestException('this day is not your');
     }

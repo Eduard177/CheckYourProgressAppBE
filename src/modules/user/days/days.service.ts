@@ -13,8 +13,8 @@ export class DaysService {
     private userService: UserService,
   ) {}
 
-  async create(createDay: CreateDay, email: string): Promise<Days> {
-    const user = await this.userService.getByEmail(email);
+  async create(createDay: CreateDay, id: string): Promise<Days> {
+    const user = await this.userService.getById(id);
     if (user.isConfirmedEmail && !user.isBlocked) {
       const dayModel = new this.daysModel({
         ...createDay,

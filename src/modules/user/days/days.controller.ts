@@ -21,8 +21,8 @@ export class DaysController {
   constructor(private readonly daysServices: DaysService) {}
 
   @Post('create')
-  saveDay(@Body() createDay: CreateDay, @Query('email') email: string) {
-    return this.daysServices.create(createDay, email);
+  saveDay(@Body() createDay: CreateDay, @Query('id') id: string) {
+    return this.daysServices.create(createDay, id);
   }
 
   @Get(':email')

@@ -53,7 +53,7 @@ export class UserService {
     if (!id) {
       throw new BadRequestException('id must be send');
     }
-    const userId = this.userModel.findById(id);
+    const userId = await this.userModel.findById(id);
 
     if (!userId) {
       throw new NotFoundException('this user dont exist');
@@ -62,8 +62,7 @@ export class UserService {
   }
 
   async updateUser(id: string, updateUserDTO: UpdateUserDTO) {
-    const user = this.getById(id);
-    return this.userModel.updateOne(user, { ...updateUserDTO });
+    return this.userModel.findByIdAndUpdate(id, { ...updateUserDTO });
   }
 
   async addDayToUser(userId: string, dayId: string) {
