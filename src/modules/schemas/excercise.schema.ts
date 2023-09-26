@@ -9,11 +9,14 @@ export class Excercise extends Document {
   _id: ObjectId;
   @Prop({ required: true })
   exercise: string;
+
+  @Prop({ required: true, type: Object })
+  exerciseType: any;
   @Prop({ required: true })
   sets: number;
   @Prop({ required: true, type: Object, blackbox: true })
   repetition: any;
-  @Prop({ required: true, type: Object, blackbox: true })
+  @Prop({ type: Object, blackbox: true })
   weight: any;
   @Prop({ length: 2, default: 'lb' })
   weightMeasure: string;

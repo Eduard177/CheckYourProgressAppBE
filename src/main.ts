@@ -6,8 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const options = new DocumentBuilder()
     .addBearerAuth()
-    .setTitle('CheckYourProgressApi')
-    .setDescription('This is a api of checkYourProgressApp')
+    .setTitle('GymPro Goals')
+    .setDescription('This is a api of GymPro Goals')
     .setVersion('0.0.1')
     .build();
   const documet = SwaggerModule.createDocument(app, options);

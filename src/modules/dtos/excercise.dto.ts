@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsEmail,
   IsNotEmpty,
   IsNumber,
@@ -14,6 +15,9 @@ export class CreateExcercises {
   @ApiProperty()
   @IsNumber()
   sets: number;
+  @ApiProperty()
+  @IsArray()
+  exerciseType: any;
   @ApiProperty()
   @IsObject()
   repetition: any;
@@ -36,6 +40,9 @@ export class CreateExcercises {
 export class UpdateExcercises {
   @ApiProperty()
   exercise: string;
+  @ApiProperty()
+  @IsArray()
+  exerciseType: any;
   @ApiProperty()
   @IsNumber()
   sets: number;
